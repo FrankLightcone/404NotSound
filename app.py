@@ -313,9 +313,9 @@ class AudioTranscriptionApp(QMainWindow):
 
     def save_api_config(self):
         """Save API configuration to settings."""
-        self.speech_api_key = self.speech_api_key_input.toPlainText().strip()
+        self.speech_api_key = self.speech_api_key_input.text().strip()
         self.speech_api_url = self.speech_api_url_input.toPlainText().strip()
-        self.llm_api_key = self.llm_api_key_input.toPlainText().strip()
+        self.llm_api_key = self.llm_api_key_input.text().strip()
         self.output_dir = self.output_dir_input.toPlainText().strip()
 
         # Save to settings

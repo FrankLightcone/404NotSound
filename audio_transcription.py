@@ -16,7 +16,7 @@ class AudioRecorder:
     Class for handling audio recording functionality.
     """
 
-    def __init__(self, channels=1, rate=16000, chunk=1024, format=pyaudio.paInt16):
+    def __init__(self, channels=1, rate=16000, chunk=4096, format=pyaudio.paInt16):
         self.channels = channels
         self.rate = rate
         self.chunk = chunk
