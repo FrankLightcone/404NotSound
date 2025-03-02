@@ -58,6 +58,19 @@ class AudioTranscriptionApp(QMainWindow):
 
         self.summarization_worker = None  # 初始化 summarization_worker
 
+        # 创建QSettings，配置文件是tmp/.temp
+        self.setting = QSettings('tmp/.temp', QSettings.IniFormat) 
+		
+		# 设置UTF8编码，防止保存配置文件时出现乱码
+        # self.setting.setIniCodec('UTF-8') 
+		
+		# 读取上一次的目录路径
+        self.last_path = self.setting.value('LastFilePath')
+		
+	 	# 如果字符串为空，将路径索引到根目录
+        if self.last_path is None:
+            self.last_path = "" # 根盘符
+
     def init_transcription_manager(self):
         """Initialize or reinitialize the transcription manager with current settings."""
         if all([self.speech_api_key, self.speech_api_url, self.llm_api_key]):
@@ -289,7 +302,7 @@ class AudioTranscriptionApp(QMainWindow):
         # 添加一个TextEdit Widget
         self.summary_text_copy = QTextEdit()
         self.summary_text_copy.setReadOnly(True)
-        self.summary_text_copy.setMarkdown(self.summary_text.toPlainText())
+        self.summary_text_copy.setMarkdown(self.summary_text.toMarkdown())
         self.main_layout.addWidget(self.summary_text_copy)
 
         self.new_window.show()
@@ -301,7 +314,7 @@ class AudioTranscriptionApp(QMainWindow):
             return
         # 复制到剪贴板
         clipboard = QApplication.clipboard()
-        clipboard.setText(self.summary_text.toPlainText())
+        clipboard.setText(self.summary_text.toMarkdown())
         self.statusBar().showMessage("Summary copied to clipboard", 3000)
 
 
@@ -380,10 +393,12 @@ class AudioTranscriptionApp(QMainWindow):
     def open_audio_file(self):
         """Open an existing audio file for transcription."""
         file_path, _ = QFileDialog.getOpenFileName(
-            self, "Open Audio File", "", "Audio Files (*.wav *.mp3 *.flac *.ogg *.m4a)"
+            self, "Open Audio File", self.last_path, "Audio Files (*.wav *.mp3 *.flac *.ogg *.m4a)"
         )
 
         if file_path:
+            self.setting.setValue('LastFilePath', os.path.dirname(file_path))
+
             self.current_audio_file = file_path
             self.transcribe_audio()
 
