@@ -5,7 +5,10 @@
 [Chinese](./docs/README.zh-CN.md) | [English]
 
 **404NotSound integrates the open-source speech recognition project ********************[SenseVoice](https://github.com/FunAudioLLM/SenseVoice)******************** and the ********************[DeepSeek API](https://api-docs.deepseek.com/)******************** for classroom or lecture transcription. It utilizes DeepSeek for organization and outputs summaries in Markdown format.**
-![img_1.png](./docs/img_1.png){:height="50%" width="50%"}
+
+[//]: # (![img_1.png]&#40;./docs/img_1.png&#41;)
+ <img src="./docs/img_1.png" width = "500" height = "610" alt="overview" align=center />
+
 ## Table of Contents
 
 - [Project Overview](#project-overview)
