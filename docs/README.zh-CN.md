@@ -5,7 +5,7 @@
 [中文] | [English](../README.md)
 
 **404NotFound集成了开源语音识别项目[SenseVoice](https://github.com/FunAudioLLM/SenseVoice)和[DeepSeek API](https://api-docs.deepseek.com/)，用于课堂或讲座记录，使用DeepSeek整理，输出Markdown格式总结**
-![img_1.png](img_1.png)
+![img_1.png](img_1.png){:height="50%" width="50%"}
 ## 目录
 
 *   [项目简介](#项目简介)
