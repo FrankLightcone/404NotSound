@@ -155,7 +155,7 @@ curl -k -X POST "https://<Your Server IP Address>:14612/admin/create_key" \
 ### 开发计划
 
 - [x] 完成基本的GUI界面
-- [ ] 支持视频输入
+- [x] 支持视频输入
 - [ ] 支持同时输入课程PPT
 - [ ] 支持使用其他LLM模型
 - [ ] 支持多轮对话

@@ -168,7 +168,7 @@ For DeepSeek-related issues, refer to the [DeepSeek API](https://api-docs.deepse
 ### Development Roadmap
 
 - [x] Completed basic GUI interface
-- [ ] Support video input
+- [x] Support video input
 - [ ] Support simultaneous input of course PPT
 - [ ] Support using other LLM models
 - [ ] Support multi-turn conversation

@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
 from openai import OpenAI
+from mov_support import extract_audio_from_video
 
 
 class AudioRecorder:
@@ -322,6 +323,17 @@ class TranscriptionManager:
             self.current_task = task
             return True
         return False
+    
+    def extract_audio_from_video(self, video_path: str, output_audio_path: str) -> None:
+        """
+        Extract audio from a video file and save it as a WAV file.
+
+        Args:
+            video_path (str): Path to the video file
+            output_audio_path (str): Path to save the extracted audio
+        """   
+        is_success = extract_audio_from_video(video_path, output_audio_path)
+        return is_success
 
     def check_transcription_status(self) -> Dict[str, Any]:
         """

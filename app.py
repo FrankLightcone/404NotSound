@@ -14,6 +14,26 @@ from audio_transcription import TranscriptionManager
 from summarize import SummarizationWorker
 from Instructions import *
 
+from PySide6.QtCore import QThread, Signal
+
+class AudioExtractionWorker(QThread):
+    extraction_finished = Signal(bool, str)  # 成功与否和消息
+
+    def __init__(self, transcription_manager, movie_path, status_bar, audio_ouput_path="tmp/extraction.wav"):
+        super().__init__()
+        self.transcription_manager = transcription_manager
+        self.movie_path = movie_path
+        self.audio_output_path = audio_ouput_path
+        self.status_bar = status_bar
+
+    def run(self):
+        self.status_bar.showMessage("Extracting audio from video...")
+        success = self.transcription_manager.extract_audio_from_video(self.movie_path, self.audio_output_path)
+        if success:
+            self.status_bar.showMessage("Audio extraction completed")
+        else:
+            self.status_bar.showMessage("Audio extraction failed")
+        self.extraction_finished.emit(success, self.audio_output_path)
 
 class AudioTranscriptionApp(QMainWindow):
     def __init__(self):
@@ -393,7 +413,8 @@ class AudioTranscriptionApp(QMainWindow):
     def open_audio_file(self):
         """Open an existing audio file for transcription."""
         file_path, _ = QFileDialog.getOpenFileName(
-            self, "Open Audio File", self.last_path, "Audio Files (*.wav *.mp3 *.flac *.ogg *.m4a)"
+            self, "Open Audio File", self.last_path, "Audio Files & Movie Files" \
+                    "(*.wav *.mp3 *.flac *.ogg *.m4a *.mp4 *.avi *.mov *.mkv)"
         )
 
         if file_path:
@@ -411,27 +432,41 @@ class AudioTranscriptionApp(QMainWindow):
         self.transcription_text.clear()
         self.summary_text.clear()
 
-        # Get selected language
-        selected_language = self.language_combo.currentData()
-
         # Show progress
         self.progress_bar.setVisible(True)
         self.transcription_in_progress = True
-        self.statusBar().showMessage("Transcribing audio...")
 
-        # Start transcription
+        if self.current_audio_file[-4:] in ['.mp4', '.avi', '.mov', '.mkv']:
+            # Extract audio from video in a separate thread
+            self.audio_extraction_worker = AudioExtractionWorker(self.transcription_manager, self.current_audio_file, self.statusBar())
+            self.audio_extraction_worker.extraction_finished.connect(self.on_audio_extraction_finished)
+            self.audio_extraction_worker.start()
+        else:
+            self.start_transcription()
+
+    def on_audio_extraction_finished(self, success, audio_file):
+        """Handle the completion of audio extraction."""
+        self.progress_bar.setVisible(False)
+        if success:
+            self.current_audio_file = audio_file
+            self.start_transcription()
+        else:
+            self.transcription_in_progress = False
+            QMessageBox.warning(self, "Audio Extraction Error", "Failed to extract audio from video.")
+
+    def start_transcription(self):
+        """Start the transcription process."""
+        self.statusBar().showMessage("Transcribing audio...")
         success = self.transcription_manager.submit_for_transcription(
-            self.current_audio_file, selected_language, True
+            self.current_audio_file, self.language_combo.currentData(), True
         )
 
         if success:
-            # Start checking for status
             self.status_timer.start(2000)  # Check every 2 seconds
         else:
             self.progress_bar.setVisible(False)
             self.transcription_in_progress = False
-            QMessageBox.warning(self, "Transcription Error",
-                                "Failed to submit audio for transcription.")
+            QMessageBox.warning(self, "Transcription Error", "Failed to submit audio for transcription.")
 
     def check_transcription_status(self):
         """Check the status of the current transcription task."""
