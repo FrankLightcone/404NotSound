@@ -1,4 +1,3 @@
-import os
 import time
 import wave
 import pyaudio
@@ -6,10 +5,10 @@ import tempfile
 import requests
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 from dataclasses import dataclass
 from openai import OpenAI
-from mov_support import extract_audio_from_video
+from util.mov_support import extract_audio_from_video
 
 
 class AudioRecorder:

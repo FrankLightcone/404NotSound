@@ -169,7 +169,9 @@ For DeepSeek-related issues, refer to the [DeepSeek API](https://api-docs.deepse
 
 - [x] Completed basic GUI interface
 - [x] Support video input
+- [ ] UI optimization
 - [ ] Support simultaneous input of course PPT
+- [ ] Historical data storage and retrieval
 - [ ] Support using other LLM models
 - [ ] Support multi-turn conversation
 
