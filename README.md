@@ -2,7 +2,7 @@
 
 &#x20;
 
-[Chinese](./docs/README.zh-CN.md) | [English]
+[中文](./docs/README.zh-CN.md) | [English]
 
 **404NotSound integrates the open-source speech recognition project ********************[SenseVoice](https://github.com/FunAudioLLM/SenseVoice)******************** and the ********************[DeepSeek API](https://api-docs.deepseek.com/)******************** for classroom or lecture transcription. It utilizes DeepSeek for organization and outputs summaries in Markdown format.**
 
@@ -171,6 +171,8 @@ For DeepSeek-related issues, refer to the [DeepSeek API](https://api-docs.deepse
 - [x] Support video input
 - [ ] UI optimization
 - [ ] Support simultaneous input of course PPT
+- [ ] Release Windows and macOS versions
+- [ ] Docker containerization
 - [ ] Historical data storage and retrieval
 - [ ] Support using other LLM models
 - [ ] Support multi-turn conversation

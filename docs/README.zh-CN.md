@@ -158,6 +158,7 @@ curl -k -X POST "https://<Your Server IP Address>:14612/admin/create_key" \
 - [x] 支持视频输入
 - [ ] 优化界面UI显示
 - [ ] 支持同时输入课程PPT
+- [ ] 发布Windows与MacOS版本应用
 - [ ] 历史记录保存和调用
 - [ ] 支持使用其他LLM模型
 - [ ] 支持多轮对话
