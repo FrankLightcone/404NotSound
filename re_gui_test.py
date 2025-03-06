@@ -1,14 +1,17 @@
 import sys
 
-from PySide6.QtCore import QStandardPaths, QUrl
+from PySide6.QtCore import QStandardPaths, QUrl, QLocale, QTranslator
 from PySide6.QtGui import QIcon, Qt, QDesktopServices
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QApplication, QVBoxLayout, QWidget, QLabel, QFileDialog
 from qfluentwidgets import NavigationItemPosition, FluentWindow, SubtitleLabel, setFont, LineEdit, PasswordLineEdit, \
     ScrollArea, ExpandLayout, SettingCardGroup, FolderListSettingCard, PushSettingCard, SwitchSettingCard, \
     OptionsSettingCard, CustomColorSettingCard, ComboBoxSettingCard, HyperlinkCard, PrimaryPushSettingCard, setTheme, \
-    setThemeColor, RangeSettingCard
+    setThemeColor, RangeSettingCard, FluentTranslator
 from qfluentwidgets import FluentIcon as FIF
+
 from ui.setting import SpeechSettingsInterface
+from util.ICON import DEEPSEEK
+
 
 class Widget(QFrame):
 
@@ -91,8 +94,7 @@ class Window(FluentWindow):
         self.navigationInterface.addSeparator()
 
         self.addSubInterface(self.summaryInterface, FIF.ROBOT, 'Summary 404', NavigationItemPosition.SCROLL)
-        self.addSubInterface(self.deepseekInterface, QIcon("./assets/icon/deepseek-color.svg"),
-                                                       'DeepSeek', parent=self.summaryInterface)
+        self.addSubInterface(self.deepseekInterface, DEEPSEEK,'DeepSeek', parent=self.summaryInterface)
 
         self.addSubInterface(self.settingInterface, FIF.SETTING, 'Settings', NavigationItemPosition.BOTTOM)
 
@@ -104,6 +106,12 @@ class Window(FluentWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
+    # 简体中文
+    translator = FluentTranslator(QLocale(QLocale.Chinese, QLocale.China))
+    # galleryTranslator = QTranslator()
+    # galleryTranslator.load(QLocale.Chinese, "gallery", ".", ":/gallery/i18n")
+    app.installTranslator(translator)
     w = Window()
     w.show()
     app.exec()

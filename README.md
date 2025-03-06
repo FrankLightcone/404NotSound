@@ -22,7 +22,7 @@
 As the project name suggests, 404NotSound subtly represents situations in class where students often say, "Sorry, I didn't hear that." This project currently uses PySide6 as the GUI framework, SenseVoice as the speech recognition engine, and DeepSeek as the LLM-based summarization engine.
 
 For example:
-If you input a 3Blue1Brown video (extracting only the audio for now, with potential future support for video), the original video links are:
+If you input a 3Blue1Brown video, the original video links are:
 [https://www.bilibili.com/video/BV1xmA2eMEFF](https://www.bilibili.com/video/BV1xmA2eMEFF)[ ](https://www.bilibili.com/video/BV1xmA2eMEFF)(Bilibili)
 [https://youtu.be/LPZh9BOjkQs](https://youtu.be/LPZh9BOjkQs)[ ](https://youtu.be/LPZh9BOjkQs)(YouTube).
 
@@ -177,3 +177,9 @@ For DeepSeek-related issues, refer to the [DeepSeek API](https://api-docs.deepse
 - [ ] Support using other LLM models
 - [ ] Support multi-turn conversation
 
+Now, the project is in the early development stage, and we welcome contributions from developers and users. If you have any questions or suggestions, please feel free to open an issue or pull request.
+
+## Commitment Log
+### 2025-3-6
+Refactor the UI interface Based on The [PySide6-Fluent-UI](https://github.com/zhiyiYo/PyQt-Fluent-Widgets/tree/PySide6), (Setting Interface)
+![img.png](resource/images/img.png)

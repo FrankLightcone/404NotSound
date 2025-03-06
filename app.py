@@ -1,18 +1,17 @@
 import sys
 import os
-import time
 from pathlib import Path
 from typing import Optional
 from PySide6.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout,
                                QWidget, QPushButton, QTextEdit, QLabel, QFileDialog,
                                QComboBox, QGroupBox, QProgressBar, QMessageBox, QCheckBox, QLineEdit)
 from PySide6.QtCore import QTimer, Slot, Qt, QSettings
-from PySide6.QtGui import QIcon, QTextCursor
+from PySide6.QtGui import QTextCursor
 
 # Import the core module you defined earlier
 from audio_transcription import TranscriptionManager
 from summarize import SummarizationWorker
-from Instructions import *
+from util.Instructions import *
 
 from PySide6.QtCore import QThread, Signal
 

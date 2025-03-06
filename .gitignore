@@ -1,4 +1,5 @@
 .idea/
 __pycache__/
-tem/
+tmp/
 transcriptions/GNSS Lecture 2.txt
+PyQt-Fluent-Widgets/

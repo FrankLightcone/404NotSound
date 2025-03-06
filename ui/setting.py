@@ -1,119 +1,83 @@
 # coding:utf-8
+from PySide6.QtCore import Qt, QUrl, QStandardPaths, Signal
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import (QWidget, QLabel, QFileDialog, QFontDialog)
 from qfluentwidgets import (SettingCardGroup, SwitchSettingCard, PushSettingCard,
                             OptionsSettingCard, HyperlinkCard, PrimaryPushSettingCard,
                             ScrollArea, CustomColorSettingCard, ExpandLayout,
                             FluentIcon as FIF, ComboBoxSettingCard,
-                            PasswordLineEdit, LineEdit, setTheme, setThemeColor)
-from PySide6.QtCore import Qt, QUrl, QStandardPaths
-from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import (QWidget, QLabel, QFileDialog, QVBoxLayout)
-from qfluentwidgets import ConfigItem, Theme
-from util.config import cfg
+                            setTheme, setThemeColor, isDarkTheme, FolderListSettingCard,
+                            RangeSettingCard, ColorSettingCard, InfoBar)
+from qfluentwidgets import Theme
 
-
-
-class ConfigManager:
-    """ A simple configuration manager to handle settings """
-
-    def __init__(self):
-        # Theme mode settings
-        self.themeMode = 'light'  # Default to light theme
-
-        # API Keys and URLs
-        self.speechApiKey = ''
-        self.speechApiUrl = ''
-        self.deepseekApiKey = ''
-
-        # Recordings folder
-        self.recordingsFolder = ''
-
-    def setThemeMode(self, mode):
-        """ Set theme mode: 'light', 'dark', or 'system' """
-        self.themeMode = mode
-
-    def setSpeechApiKey(self, key):
-        """ Set Speech API Key """
-        self.speechApiKey = key
-
-    def setSpeechApiUrl(self, url):
-        """ Set Speech API URL """
-        self.speechApiUrl = url
-
-    def setDeepseekApiKey(self, key):
-        """ Set DeepSeek API Key """
-        self.deepseekApiKey = key
-
-    def setRecordingsFolder(self, folder):
-        """ Set recordings folder path """
-        self.recordingsFolder = folder
+from util.config import cfg, HELP_URL, YEAR, AUTHOR, VERSION
+from util.ICON import MODEL, AUDIO_MODEL
+from ui.ApiSettingCard import TransAPISettingCard, SummaryAPISettingCard
 
 
 class SpeechSettingsInterface(ScrollArea):
-    """ Speech Transcription Settings Interface """
+    """ Setting interface """
 
-    def __init__(self, parent=None, config=None):
+    checkUpdateSig = Signal()
+    musicFoldersChanged = Signal(list)
+    acrylicEnableChanged = Signal(bool)
+    downloadFolderChanged = Signal(str)
+    minimizeToTrayChanged = Signal(bool)
+
+    def __init__(self, parent=None):
         super().__init__(parent=parent)
-
-
-        # Use provided config or create a new one
-        self.cfg = config if config is not None else ConfigManager()
-
         self.scrollWidget = QWidget()
         self.expandLayout = ExpandLayout(self.scrollWidget)
 
-        # Setting label
-        self.settingLabel = QLabel(self.tr("Speech Transcription Settings"), self)
+        # setting label
+        self.settingLabel = QLabel(self.tr("Settings"), self)
 
-        # API Configuration Group
-        self.apiGroup = SettingCardGroup(
-            self.tr("API Configuration"), self.scrollWidget)
-
-        # Speech Transcription API Key Input Card
-        self.speechApiKeyCard = PushSettingCard(
-            self.tr("Edit API Key"),
-            FIF.EDIT,
-            self.tr("Speech Transcription API Key"),
-            self.tr("Configure your speech transcription API credentials"),
-            self.apiGroup
+        # music folders
+        self.generalConfigGroup = SettingCardGroup(
+            self.tr("General Config"), self.scrollWidget)
+        self.audioFolderCard = FolderListSettingCard(
+            cfg.transcriptionFolders,
+            self.tr("Local audio folder"),
+            directory=QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation),
+            parent=self.generalConfigGroup
         )
-
-        # Speech Transcription API URL Input Card
-        self.speechApiUrlCard = PushSettingCard(
-            self.tr("Edit API URL"),
-            FIF.LINK,
-            self.tr("Speech Transcription API URL"),
-            self.tr("Configure your speech transcription API endpoint"),
-            self.apiGroup
-        )
-
-        # DeepSeek API Key Input Card
-        self.deepseekApiKeyCard = PushSettingCard(
-            self.tr("Edit API Key"),
-            FIF.EDIT,
-            self.tr("DeepSeek API Key"),
-            self.tr("Configure your DeepSeek API credentials"),
-            self.apiGroup
-        )
-
-        # Recordings Folder Group
-        self.recordingsGroup = SettingCardGroup(
-            self.tr("Recordings"), self.scrollWidget)
-        self.recordingsFolderCard = PushSettingCard(
+        self.transcriptionFolderCard = PushSettingCard(
             self.tr('Choose folder'),
-            FIF.FOLDER,
-            self.tr("Recordings Directory"),
-            self.tr("Select the directory to store your recordings"),
-            self.recordingsGroup
+            FIF.FEEDBACK,
+            self.tr("Transcription directory"),
+            cfg.get(cfg.downloadFolder),
+            self.generalConfigGroup
         )
+        self.transcriptionModelSettingCard = OptionsSettingCard(
+            cfg.transcriptionModel,
+            AUDIO_MODEL,
+            self.tr('Transcription model'),
+            self.tr('Choose the model used for transcription'),
+            texts=['Local SenseVoice', 'SenseVoice API', 'Google'],
+            parent=self.generalConfigGroup
+        )
+        self.transcriptionAPIKeyCard = TransAPISettingCard()
+        self.summaryLLMModelSettingCard = OptionsSettingCard(
+            cfg.summaryLLMModel,
+            MODEL,
+            self.tr('LLM model'),
+            self.tr('Choose the model used for transcription'),
+            texts=['DeepSeek-V3', 'DeepSeek-R1', 'GPT-4o'],
+            parent=self.generalConfigGroup
+        )
+        self.summaryLLMModelAPIKeyCard = SummaryAPISettingCard()
 
-        # Personalization Group
-        self.personalGroup = SettingCardGroup(
-            self.tr('Personalization'), self.scrollWidget)
-
-        # Theme Card with actual configuration
-        # 然后在 __init__ 方法中修改 themeCard 的初始化
+        # personalization
+        self.personalGroup = SettingCardGroup(self.tr('Personalization'), self.scrollWidget)
+        self.enableAcrylicCard = SwitchSettingCard(
+            FIF.TRANSPARENT,
+            self.tr("Use Acrylic effect"),
+            self.tr("Acrylic effect has better visual experience, but it may cause the window to become stuck"),
+            configItem=cfg.enableAcrylicBackground,
+            parent=self.personalGroup
+        )
         self.themeCard = OptionsSettingCard(
-            cfg.themeMode,  # 使用 ConfigItem
+            cfg.themeMode,
             FIF.BRUSH,
             self.tr('Application theme'),
             self.tr("Change the appearance of your application"),
@@ -123,109 +87,242 @@ class SpeechSettingsInterface(ScrollArea):
             ],
             parent=self.personalGroup
         )
-
-        # Theme Color Card
-        self.themeColorCard = CustomColorSettingCard(
-            cfg.themeColor,  # You might want to add a theme color to your config
+        self.themeColorCard=CustomColorSettingCard(
+            cfg.themeColor,
             FIF.PALETTE,
             self.tr('Theme color'),
-            self.tr('Change the theme color of your application'),
+            self.tr('Change the theme color of you application'),
             self.personalGroup
         )
+        self.zoomCard = OptionsSettingCard(
+            cfg.dpiScale,
+            FIF.ZOOM,
+            self.tr("Interface zoom"),
+            self.tr("Change the size of widgets and fonts"),
+            texts=[
+                "100%", "125%", "150%", "175%", "200%",
+                self.tr("Use system setting")
+            ],
+            parent=self.personalGroup
+        )
+        self.languageCard = ComboBoxSettingCard(
+            cfg.language,
+            FIF.LANGUAGE,
+            self.tr('Language'),
+            self.tr('Set your preferred language for UI'),
+            texts=['简体中文', '繁體中文', 'English', self.tr('Use system setting')],
+            parent=self.personalGroup
+        )
 
-        # About Group
+
+        # desktop lyric
+        self.deskLyricGroup = SettingCardGroup(self.tr('Desktop Lyric'), self.scrollWidget)
+        self.deskLyricFontCard = PushSettingCard(
+            self.tr('Choose font'),
+            FIF.FONT,
+            self.tr('Font'),
+            parent=self.deskLyricGroup
+        )
+        self.deskLyricHighlightColorCard = ColorSettingCard(
+            cfg.deskLyricHighlightColor,
+            FIF.PALETTE,
+            self.tr('Foreground color'),
+            parent=self.deskLyricGroup
+        )
+        self.deskLyricStrokeColorCard = ColorSettingCard(
+            cfg.deskLyricStrokeColor,
+            FIF.PENCIL_INK,
+            self.tr('Stroke color'),
+            parent=self.deskLyricGroup
+        )
+        self.deskLyricStrokeSizeCard = RangeSettingCard(
+            cfg.deskLyricStrokeSize,
+            FIF.HIGHTLIGHT,
+            self.tr('Stroke size'),
+            parent=self.deskLyricGroup
+        )
+        self.deskLyricAlignmentCard = OptionsSettingCard(
+            cfg.deskLyricAlignment,
+            FIF.ALIGNMENT,
+            self.tr('Alignment'),
+            texts=[
+                self.tr('Center aligned'), self.tr('Left aligned'),
+                self.tr('Right aligned')
+            ],
+            parent=self.deskLyricGroup
+        )
+
+        # main panel
+        self.mainPanelGroup = SettingCardGroup(self.tr('Main Panel'), self.scrollWidget)
+        self.minimizeToTrayCard = SwitchSettingCard(
+            FIF.MINIMIZE,
+            self.tr('Minimize to tray after closing'),
+            self.tr('PyQt-Fluent-Widgets will continue to run in the background'),
+            configItem=cfg.minimizeToTray,
+            parent=self.mainPanelGroup
+        )
+
+        # update software
+        self.updateSoftwareGroup = SettingCardGroup(self.tr("Software update"), self.scrollWidget)
+        self.updateOnStartUpCard = SwitchSettingCard(
+            FIF.UPDATE,
+            self.tr('Check for updates when the application starts'),
+            self.tr('The new version will be more stable and have more features'),
+            configItem=cfg.checkUpdateAtStartUp,
+            parent=self.updateSoftwareGroup
+        )
+
+        # application
         self.aboutGroup = SettingCardGroup(self.tr('About'), self.scrollWidget)
+        self.helpCard = HyperlinkCard(
+            HELP_URL,
+            self.tr('Open help page'),
+            FIF.HELP,
+            self.tr('Help'),
+            self.tr('Discover new features and learn useful tips about PyQt-Fluent-Widgets'),
+            self.aboutGroup
+        )
         self.feedbackCard = PrimaryPushSettingCard(
             self.tr('Provide feedback'),
             FIF.FEEDBACK,
             self.tr('Provide feedback'),
-            self.tr('Help us improve the application by providing feedback'),
+            self.tr('Help us improve PyQt-Fluent-Widgets by providing feedback'),
             self.aboutGroup
         )
         self.aboutCard = PrimaryPushSettingCard(
-            self.tr('About'),
+            self.tr('Check update'),
             FIF.INFO,
             self.tr('About'),
-            self.tr('Speech Transcription Application\nVersion 1.0.0'),
+            '© ' + self.tr('Copyright') + f" {YEAR}, {AUTHOR}. " +
+            self.tr('Version') + f" {VERSION}",
             self.aboutGroup
         )
 
-        # Initialize the interface
+        self.setObjectName("Setting".replace(' ', '-'))
+
         self.__initWidget()
-        self.__initLayout()
-        self.__connectSignalToSlot()
 
     def __initWidget(self):
         self.resize(1000, 800)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setViewportMargins(0, 80, 0, 20)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setViewportMargins(0, 120, 0, 20)
         self.setWidget(self.scrollWidget)
         self.setWidgetResizable(True)
-        self.setObjectName('settingInterface')
+
+        # initialize style sheet
+        self.__setQss()
+
+        # initialize layout
+        self.__initLayout()
+        self.__connectSignalToSlot()
 
     def __initLayout(self):
-        # Add groups to layout
-        self.expandLayout.setSpacing(28)
-        self.expandLayout.setContentsMargins(36, 10, 36, 0)
+        self.settingLabel.move(60, 63)
 
-        # Add API Configuration Group
-        self.apiGroup.addSettingCard(self.speechApiKeyCard)
-        self.apiGroup.addSettingCard(self.speechApiUrlCard)
-        self.apiGroup.addSettingCard(self.deepseekApiKeyCard)
-        self.expandLayout.addWidget(self.apiGroup)
+        # add cards to group
+        self.generalConfigGroup.addSettingCard(self.audioFolderCard)
+        self.generalConfigGroup.addSettingCard(self.transcriptionFolderCard)
+        self.generalConfigGroup.addSettingCard(self.transcriptionModelSettingCard)
+        self.generalConfigGroup.addSettingCard(self.transcriptionAPIKeyCard)
+        self.generalConfigGroup.addSettingCard(self.summaryLLMModelSettingCard)
+        self.generalConfigGroup.addSettingCard(self.summaryLLMModelAPIKeyCard)
 
-        # Add Recordings Group
-        self.recordingsGroup.addSettingCard(self.recordingsFolderCard)
-        self.expandLayout.addWidget(self.recordingsGroup)
-
-        # Add Personalization Group
+        self.personalGroup.addSettingCard(self.enableAcrylicCard)
         self.personalGroup.addSettingCard(self.themeCard)
         self.personalGroup.addSettingCard(self.themeColorCard)
-        self.expandLayout.addWidget(self.personalGroup)
+        self.personalGroup.addSettingCard(self.zoomCard)
+        self.personalGroup.addSettingCard(self.languageCard)
 
-        # Add About Group
+        self.deskLyricGroup.addSettingCard(self.deskLyricFontCard)
+        self.deskLyricGroup.addSettingCard(self.deskLyricHighlightColorCard)
+        self.deskLyricGroup.addSettingCard(self.deskLyricStrokeColorCard)
+        self.deskLyricGroup.addSettingCard(self.deskLyricStrokeSizeCard)
+        self.deskLyricGroup.addSettingCard(self.deskLyricAlignmentCard)
+
+        self.updateSoftwareGroup.addSettingCard(self.updateOnStartUpCard)
+
+        self.mainPanelGroup.addSettingCard(self.minimizeToTrayCard)
+
+        self.aboutGroup.addSettingCard(self.helpCard)
         self.aboutGroup.addSettingCard(self.feedbackCard)
         self.aboutGroup.addSettingCard(self.aboutCard)
+
+        # add setting card group to layout
+        self.expandLayout.setSpacing(28)
+        self.expandLayout.setContentsMargins(60, 10, 60, 0)
+        self.expandLayout.addWidget(self.generalConfigGroup)
+        self.expandLayout.addWidget(self.personalGroup)
+        self.expandLayout.addWidget(self.deskLyricGroup)
+        self.expandLayout.addWidget(self.mainPanelGroup)
+        self.expandLayout.addWidget(self.updateSoftwareGroup)
         self.expandLayout.addWidget(self.aboutGroup)
 
-    def __connectSignalToSlot(self):
-        """ Connect signals to slots """
-        # Recordings folder selection
-        self.recordingsFolderCard.clicked.connect(self.__onRecordingsFolderCardClicked)
+    def __setQss(self):
+        """ set style sheet """
+        self.scrollWidget.setObjectName('scrollWidget')
+        self.settingLabel.setObjectName('settingLabel')
 
-        # Feedback card
-        self.feedbackCard.clicked.connect(self.__onFeedbackCardClicked)
+        theme = 'dark' if isDarkTheme() else 'light'
+        with open(f'resource/qss/{theme}/setting_interface.qss', encoding='utf-8') as f:
+            self.setStyleSheet(f.read())
 
-        # Theme mode change
-        self.themeCard.optionChanged.connect(self.__onThemeModeChanged)
+    def __showRestartTooltip(self):
+        """ show restart tooltip """
+        InfoBar.warning(
+            '',
+            self.tr('Configuration takes effect after restart'),
+            parent=self.window()
+        )
 
-    def __onRecordingsFolderCardClicked(self):
-        """ Handle recordings folder selection """
+    def __onDeskLyricFontCardClicked(self):
+        """ desktop lyric font button clicked slot """
+        isOk, font = QFontDialog.getFont(
+            cfg.desktopLyricFont, self.window(), self.tr("Choose font"))
+        if isOk:
+            cfg.desktopLyricFont = font
+
+    def __onDownloadFolderCardClicked(self):
+        """ download folder card clicked slot """
         folder = QFileDialog.getExistingDirectory(
-            self, self.tr("Choose Recordings Folder"), "./")
-        if folder:
-            self.cfg.setRecordingsFolder(folder)
-            self.recordingsFolderCard.setContent(folder)
+            self, self.tr("Choose folder"), "./")
+        if not folder or cfg.get(cfg.downloadFolder) == folder:
+            return
 
-    def __onFeedbackCardClicked(self):
-        """ Open feedback URL """
-        feedback_url = "https://github.com/yourusername/yourproject/issues"
-        QDesktopServices.openUrl(QUrl(feedback_url))
+        cfg.set(cfg.downloadFolder, folder)
+        self.transcriptionFolderCard.setContent(folder)
 
-    def __onThemeModeChanged(self, index):
-        """ Handle theme mode change """
-        theme_modes = ['light', 'dark', 'system']
-        self.cfg.setThemeMode(theme_modes[index])
-        # 这里可以添加实际的主题切换逻辑
+    def __onThemeChanged(self, theme: Theme):
+        """ theme changed slot """
+        # change the theme of qfluentwidgets
+        setTheme(theme)
 
+        # chang the theme of setting interface
+        self.__setQss()
 
-# 使用示例
-if __name__ == "__main__":
-    import sys
-    from PySide6.QtWidgets import QApplication
+    def __connectSignalToSlot(self):
+        """ connect signal to slot """
+        cfg.appRestartSig.connect(self.__showRestartTooltip)
+        cfg.themeChanged.connect(self.__onThemeChanged)
 
-    app = QApplication(sys.argv)
-    config = ConfigManager()  # 创建配置管理器
-    window = SpeechSettingsInterface(config=config)
-    window.show()
-    sys.exit(app.exec())
+        # music in the pc
+        self.audioFolderCard.folderChanged.connect(
+            self.musicFoldersChanged)
+        self.transcriptionFolderCard.clicked.connect(
+            self.__onDownloadFolderCardClicked)
+
+        # personalization
+        self.enableAcrylicCard.checkedChanged.connect(
+            self.acrylicEnableChanged)
+        self.themeColorCard.colorChanged.connect(setThemeColor)
+
+        # playing interface
+        self.deskLyricFontCard.clicked.connect(self.__onDeskLyricFontCardClicked)
+
+        # main panel
+        self.minimizeToTrayCard.checkedChanged.connect(
+            self.minimizeToTrayChanged)
+
+        # about
+        self.aboutCard.clicked.connect(self.checkUpdateSig)
+        self.feedbackCard.clicked.connect(
+            lambda: QDesktopServices.openUrl(QUrl(cfg.FEEDBACK_URL)))

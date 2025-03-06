@@ -22,7 +22,7 @@
 正如项目名所言，404NotSound含蓄地代表了经常在课堂上发生的类似于“对不起，我没听清楚”的情况。本项目目前使用PySide6作为GUI框架开发，SenseVoice作为语音识别引擎，DeepSeek作为LLM整理引擎。
 
 例如：
-输入3Blue1Brown的视频（提取出音频，后续可能会考虑添加视频支持），原视频链接
+输入3Blue1Brown的视频(支持视频输入），原视频链接
 [https://www.bilibili.com/video/BV1xmA2eMEFF](https://www.bilibili.com/video/BV1xmA2eMEFF)（Bilibili）
 [https://youtu.be/LPZh9BOjkQs](https://youtu.be/LPZh9BOjkQs)（YouTube），
 SenseVoice识别出的文本如下：
@@ -162,3 +162,11 @@ curl -k -X POST "https://<Your Server IP Address>:14612/admin/create_key" \
 - [ ] 历史记录保存和调用
 - [ ] 支持使用其他LLM模型
 - [ ] 支持多轮对话
+
+目前项目正处于早期阶段，欢迎大家贡献！
+
+## 提交日志
+
+### 2025-3-6
+Refactor the UI interface Based on The [PySide6-Fluent-UI](https://github.com/zhiyiYo/PyQt-Fluent-Widgets/tree/PySide6), (Setting Interface)
+![img.png](../resource/images/img.png)
