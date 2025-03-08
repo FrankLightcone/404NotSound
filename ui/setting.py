@@ -19,7 +19,7 @@ class SpeechSettingsInterface(ScrollArea):
     """ Setting interface """
 
     checkUpdateSig = Signal()
-    musicFoldersChanged = Signal(list)
+    audioFoldersChanged = Signal(list)
     acrylicEnableChanged = Signal(bool)
     downloadFolderChanged = Signal(str)
     minimizeToTrayChanged = Signal(bool)
@@ -30,29 +30,29 @@ class SpeechSettingsInterface(ScrollArea):
         self.expandLayout = ExpandLayout(self.scrollWidget)
 
         # setting label
-        self.settingLabel = QLabel(self.tr("Settings"), self)
+        self.settingLabel = QLabel(self.tr("设置"), self)
 
         # music folders
         self.generalConfigGroup = SettingCardGroup(
-            self.tr("General Config"), self.scrollWidget)
+            self.tr("通用配置"), self.scrollWidget)
         self.audioFolderCard = FolderListSettingCard(
             cfg.transcriptionFolders,
-            self.tr("Local audio folder"),
+            self.tr("本地音频文件夹"),
             directory=QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation),
             parent=self.generalConfigGroup
         )
         self.transcriptionFolderCard = PushSettingCard(
-            self.tr('Choose folder'),
+            self.tr('选择文件夹'),
             FIF.FEEDBACK,
-            self.tr("Transcription directory"),
+            self.tr("转录保存文件夹"),
             cfg.get(cfg.downloadFolder),
             self.generalConfigGroup
         )
         self.transcriptionModelSettingCard = OptionsSettingCard(
             cfg.transcriptionModel,
             AUDIO_MODEL,
-            self.tr('Transcription model'),
-            self.tr('Choose the model used for transcription'),
+            self.tr('转录模型'),
+            self.tr('请选择转录模型'),
             texts=['Local SenseVoice', 'SenseVoice API', 'Google'],
             parent=self.generalConfigGroup
         )
@@ -60,15 +60,15 @@ class SpeechSettingsInterface(ScrollArea):
         self.summaryLLMModelSettingCard = OptionsSettingCard(
             cfg.summaryLLMModel,
             MODEL,
-            self.tr('LLM model'),
-            self.tr('Choose the model used for transcription'),
+            self.tr('大语言模型'),
+            self.tr('请选择大语言总结模型'),
             texts=['DeepSeek-V3', 'DeepSeek-R1', 'GPT-4o'],
             parent=self.generalConfigGroup
         )
         self.summaryLLMModelAPIKeyCard = SummaryAPISettingCard()
 
         # personalization
-        self.personalGroup = SettingCardGroup(self.tr('Personalization'), self.scrollWidget)
+        self.personalGroup = SettingCardGroup(self.tr('个性化'), self.scrollWidget)
         self.enableAcrylicCard = SwitchSettingCard(
             FIF.TRANSPARENT,
             self.tr("Use Acrylic effect"),
@@ -79,38 +79,38 @@ class SpeechSettingsInterface(ScrollArea):
         self.themeCard = OptionsSettingCard(
             cfg.themeMode,
             FIF.BRUSH,
-            self.tr('Application theme'),
-            self.tr("Change the appearance of your application"),
+            self.tr('主题'),
+            self.tr("请选择外观"),
             texts=[
-                self.tr('Light'), self.tr('Dark'),
-                self.tr('Use system setting')
+                self.tr('亮色调'), self.tr('暗色调'),
+                self.tr('跟随系统')
             ],
             parent=self.personalGroup
         )
         self.themeColorCard=CustomColorSettingCard(
             cfg.themeColor,
             FIF.PALETTE,
-            self.tr('Theme color'),
-            self.tr('Change the theme color of you application'),
+            self.tr('主题颜色'),
+            self.tr('改变应用的主题颜色'),
             self.personalGroup
         )
         self.zoomCard = OptionsSettingCard(
             cfg.dpiScale,
             FIF.ZOOM,
-            self.tr("Interface zoom"),
-            self.tr("Change the size of widgets and fonts"),
+            self.tr("交互大小"),
+            self.tr("改变组件和字体的大小"),
             texts=[
                 "100%", "125%", "150%", "175%", "200%",
-                self.tr("Use system setting")
+                self.tr("跟随系统")
             ],
             parent=self.personalGroup
         )
         self.languageCard = ComboBoxSettingCard(
             cfg.language,
             FIF.LANGUAGE,
-            self.tr('Language'),
-            self.tr('Set your preferred language for UI'),
-            texts=['简体中文', '繁體中文', 'English', self.tr('Use system setting')],
+            self.tr('语言设置'),
+            self.tr('设置UI界面的语言'),
+            texts=['简体中文', '繁體中文', 'English', self.tr('跟随系统')],
             parent=self.personalGroup
         )
 
@@ -118,42 +118,42 @@ class SpeechSettingsInterface(ScrollArea):
         # desktop lyric
         self.deskLyricGroup = SettingCardGroup(self.tr('Desktop Lyric'), self.scrollWidget)
         self.deskLyricFontCard = PushSettingCard(
-            self.tr('Choose font'),
+            self.tr('选择字体'),
             FIF.FONT,
-            self.tr('Font'),
+            self.tr('字体'),
             parent=self.deskLyricGroup
         )
         self.deskLyricHighlightColorCard = ColorSettingCard(
             cfg.deskLyricHighlightColor,
             FIF.PALETTE,
-            self.tr('Foreground color'),
+            self.tr('前景色'),
             parent=self.deskLyricGroup
         )
         self.deskLyricStrokeColorCard = ColorSettingCard(
             cfg.deskLyricStrokeColor,
             FIF.PENCIL_INK,
-            self.tr('Stroke color'),
+            self.tr('描边颜色'),
             parent=self.deskLyricGroup
         )
         self.deskLyricStrokeSizeCard = RangeSettingCard(
             cfg.deskLyricStrokeSize,
             FIF.HIGHTLIGHT,
-            self.tr('Stroke size'),
+            self.tr('描边大小'),
             parent=self.deskLyricGroup
         )
         self.deskLyricAlignmentCard = OptionsSettingCard(
             cfg.deskLyricAlignment,
             FIF.ALIGNMENT,
-            self.tr('Alignment'),
+            self.tr('对齐方式'),
             texts=[
-                self.tr('Center aligned'), self.tr('Left aligned'),
-                self.tr('Right aligned')
+                self.tr('中心对齐'), self.tr('左对齐'),
+                self.tr('右对齐')
             ],
             parent=self.deskLyricGroup
         )
 
         # main panel
-        self.mainPanelGroup = SettingCardGroup(self.tr('Main Panel'), self.scrollWidget)
+        self.mainPanelGroup = SettingCardGroup(self.tr('主面板'), self.scrollWidget)
         self.minimizeToTrayCard = SwitchSettingCard(
             FIF.MINIMIZE,
             self.tr('Minimize to tray after closing'),
@@ -176,21 +176,21 @@ class SpeechSettingsInterface(ScrollArea):
         self.aboutGroup = SettingCardGroup(self.tr('About'), self.scrollWidget)
         self.helpCard = HyperlinkCard(
             HELP_URL,
-            self.tr('Open help page'),
+            self.tr('打开帮助文档'),
             FIF.HELP,
             self.tr('Help'),
             self.tr('Discover new features and learn useful tips about PyQt-Fluent-Widgets'),
             self.aboutGroup
         )
         self.feedbackCard = PrimaryPushSettingCard(
-            self.tr('Provide feedback'),
+            self.tr('反馈'),
             FIF.FEEDBACK,
             self.tr('Provide feedback'),
             self.tr('Help us improve PyQt-Fluent-Widgets by providing feedback'),
             self.aboutGroup
         )
         self.aboutCard = PrimaryPushSettingCard(
-            self.tr('Check update'),
+            self.tr('检查更新'),
             FIF.INFO,
             self.tr('About'),
             '© ' + self.tr('Copyright') + f" {YEAR}, {AUTHOR}. " +
@@ -281,7 +281,7 @@ class SpeechSettingsInterface(ScrollArea):
         if isOk:
             cfg.desktopLyricFont = font
 
-    def __onDownloadFolderCardClicked(self):
+    def __onTranscriptionFolderCardClicked(self):
         """ download folder card clicked slot """
         folder = QFileDialog.getExistingDirectory(
             self, self.tr("Choose folder"), "./")
@@ -306,9 +306,9 @@ class SpeechSettingsInterface(ScrollArea):
 
         # music in the pc
         self.audioFolderCard.folderChanged.connect(
-            self.musicFoldersChanged)
+            self.audioFoldersChanged)
         self.transcriptionFolderCard.clicked.connect(
-            self.__onDownloadFolderCardClicked)
+            self.__onTranscriptionFolderCardClicked)
 
         # personalization
         self.enableAcrylicCard.checkedChanged.connect(
