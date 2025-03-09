@@ -7,8 +7,9 @@
 **404NotFound集成了开源语音识别项目[SenseVoice](https://github.com/FunAudioLLM/SenseVoice)和[DeepSeek API](https://api-docs.deepseek.com/)，用于课堂或讲座记录，使用DeepSeek整理，输出Markdown格式总结**
 
 [//]: # (![img_1.png]&#40;img_1.png&#41;{:height="50%" width="50%"})
-<img src="img_1.png" width = "500" height = "610" alt="overview" align=center />
-
+[//]: # (<img src="img_1.png" width = "500" height = "610" alt="overview" align=center />)
+目前项目正在使用 Godot4.4 作为GUI框架重构中
+![img_2.png](img_2.png)
 ## 目录
 
 *   [项目简介](#项目简介)

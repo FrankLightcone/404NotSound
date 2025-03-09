@@ -6,8 +6,10 @@
 
 **404NotSound integrates the open-source speech recognition project ********************[SenseVoice](https://github.com/FunAudioLLM/SenseVoice)******************** and the ********************[DeepSeek API](https://api-docs.deepseek.com/)******************** for classroom or lecture transcription. It utilizes DeepSeek for organization and outputs summaries in Markdown format.**
 
-[//]: # (![img_1.png]&#40;./docs/img_1.png&#41;)
- <img src="./docs/img_1.png" width = "500" height = "610" alt="overview" align=center />
+[//]: # ([//]: # &#40;![img_1.png]&#40;./docs/img_1.png&#41;&#41;)
+[//]: # ( <img src="./docs/img_1.png" width = "500" height = "610" alt="overview" align=center />)
+**The project is currently being refactored using Godot 4.4 as the GUI framework.**
+![img_2.png](docs/img_2.png)
 
 ## Table of Contents
 
